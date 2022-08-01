@@ -1,0 +1,7 @@
+@import "bootstrap/scss/bootstrap.scss";
+
+.nft-image {
+  @include media-breakpoint-up(lg) {
+    width: 75%;
+  }
+}
