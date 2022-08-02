@@ -1,6 +1,6 @@
-import { base64prefix } from "@/constants";
 import { ERC721View as ERC721 } from "@/utils";
 import Web3 from "web3";
+import { base64prefix } from "~/static/constants";
 
 export const getTokenMetadata = async (componentInstance, uri, address, tokenId) => {
     try {
