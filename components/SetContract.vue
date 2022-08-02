@@ -1,7 +1,9 @@
-<script>
-import { getNetworkURI } from "@/utils";
+<script lang="ts">
+import { getNetworkURI } from "~/utils";
+import { networkStore, contractStore } from "~/store";
+import { defineComponent } from "vue";
 
-export default {
+export default defineComponent({
     data() {
         return {
             contractAddress: "",
@@ -9,25 +11,22 @@ export default {
         };
     },
     computed: {
-        network() {
-            return this.$store.state.network;
+        networkName() {
+            return networkStore.name;
         },
     },
     methods: {
-        setNetwork(name) {
-            this.$store.commit("network/setNetwork", {
-                name,
-                uri: getNetworkURI(name),
-            });
+        setNetwork(name: string) {
+            networkStore.setNetwork({ name, uri: getNetworkURI(name) });
         },
-        setContractAddress(address) {
-            this.$store.commit("contract/setAddress", address);
+        setContractAddress(address: string) {
+            contractStore.setAddress(address);
         },
-        setTokenId(id) {
-            this.$store.commit("contract/setTokenId", id)
+        setTokenId(id: number) {
+            contractStore.setTokenId(id);
         }
     },
-};
+});
 </script>
 
 <template>
@@ -36,16 +35,16 @@ export default {
             <template #prepend>
                 <b-dropdown variant="info">
                     <template #button-content>
-                        {{ network.name || "Select network" }}
+                        {{ networkName || "Select network" }}
                     </template>
-    
-                    <b-dropdown-item :active="network.name === 'Mainnet'" @click="setNetwork('Mainnet')">
+
+                    <b-dropdown-item :active="networkName === 'Mainnet'" @click="setNetwork('Mainnet')">
                         Mainnet
                     </b-dropdown-item>
-                    <b-dropdown-item :active="network.name === 'Rinkeby'" @click="setNetwork('Rinkeby')">
+                    <b-dropdown-item :active="networkName === 'Rinkeby'" @click="setNetwork('Rinkeby')">
                         Rinkeby
                     </b-dropdown-item>
-                    <b-dropdown-item :active="network.name === 'Bcs testnet'" @click="setNetwork('Bcs testnet')">
+                    <b-dropdown-item :active="networkName === 'Bcs testnet'" @click="setNetwork('Bcs testnet')">
                         Bsc testnet
                     </b-dropdown-item>
                 </b-dropdown>

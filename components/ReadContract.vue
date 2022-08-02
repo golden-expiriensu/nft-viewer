@@ -1,7 +1,9 @@
 <script>
+import { defineComponent } from "vue"
 import { getTokenMetadata } from "~/utils/web3/getTokenMetadata"
+import { networkStore, contractStore } from "~/store"
 
-export default {
+export default defineComponent({
     data() {
         return {
             metadata: {
@@ -13,9 +15,9 @@ export default {
         }
     },
     computed: {
-        networkURI() { return this.$store.state.network.uri },
-        contractAddress() { return this.$store.state.contract.address },
-        tokenId() { return this.$store.state.contract.tokenId }
+        networkURI() { return networkStore.uri; },
+        contractAddress() { return contractStore.address },
+        tokenId() { return contractStore.tokenId; },
     },
     methods: {
         async fetchERC721(uri, address, tokenId) {
@@ -44,7 +46,7 @@ export default {
             }, delay);
         }
     }
-}
+})
 </script>
 
 <template>
