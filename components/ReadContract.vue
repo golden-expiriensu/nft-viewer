@@ -4,10 +4,10 @@
             <b-button variant="info" @click="fetchContract(networkURI, contractAddress, tokenId)" class="mb-2">
                 Fetch contract data
             </b-button>
-            <div v-if="isFetchingContract" class="ml-2 mt-1 spinner-border text-info" role="status">
+            <div v-if="metadata.isFetching" class="ml-2 mt-1 spinner-border text-info" role="status">
                 <span class="sr-only">Loading...</span>
             </div>
-            <p class="ml-2 mt-2">{{ fetchContractError }}</p>
+            <p class="ml-2 mt-2">{{ metadata.fetchingError }}</p>
         </div>
 
         <div v-if="metadata.description" class="row border-top border-bottom border-white pt-2">
@@ -32,19 +32,53 @@
 
 <script lang="ts">
 import { defineComponent } from "vue"
-import { getTokenMetadata } from "~/utils/web3/getTokenMetadata"
+import { getTokenMetadata } from "~/utils"
 import { networkStore, contractStore } from "~/store"
 import { BvModal } from "bootstrap-vue";
+
+class Metadata {
+    public description: string;
+    public image: string;
+    public fetchingError: string = "";
+
+    public isFetching: boolean = false;
+
+    constructor(desc: string, img: string) {
+        this.description = desc;
+        this.image = img;
+    }
+
+    public async update(updateFunc: () => Promise<{
+        description: string,
+        image: string,
+        error: string
+    }>) {
+        this.beforeUpdate();
+        const { description, image, error } = await updateFunc();
+        [this.description, this.image, this.fetchingError] = [description, image, error];
+        this.afterUpdate();
+    }
+
+    private beforeUpdate() {
+        this.isFetching = true;
+        this.purge();
+    }
+
+    private afterUpdate() {
+        this.isFetching = false;
+    }
+
+    private purge() {
+        this.description = "";
+        this.image = "";
+        this.fetchingError = "";
+    }
+}
 
 export default defineComponent({
     data() {
         return {
-            metadata: {
-                description: "",
-                image: ""
-            },
-            fetchContractError: "",
-            isFetchingContract: false
+            metadata: new Metadata("", ""),
         }
     },
     computed: {
@@ -54,21 +88,10 @@ export default defineComponent({
     },
     methods: {
         async fetchContract(uri: string, address: string, tokenId: number) {
-            this.isFetchingContract = true;
-            if (this.metadata.image !== "") this.metadata.image = "";
-            if (this.metadata.description !== "") this.metadata.description = "";
-
-            const result = await getTokenMetadata(this, uri, address, tokenId);
-
-            if (!result.error) {
-                this.metadata.description = result.metadata.description;
-                this.metadata.image = result.metadata.image;
-                if (this.fetchContractError !== "") this.fetchContractError = "";
-            } else {
-                this.fetchContractError = result.error;
-            }
-
-            this.isFetchingContract = false;
+            await this.metadata.update(async () => {
+                const { metadata: { description, image }, error } = await getTokenMetadata(this, uri, address, tokenId);
+                return { description, image, error };
+            });
         },
         async copyToClipboard(text: string) {
             await navigator.clipboard.writeText(text);
