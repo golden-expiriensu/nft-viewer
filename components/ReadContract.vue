@@ -34,6 +34,7 @@
 import { defineComponent } from "vue"
 import { getTokenMetadata } from "~/utils/web3/getTokenMetadata"
 import { networkStore, contractStore } from "~/store"
+import { BvModal } from "bootstrap-vue";
 
 export default defineComponent({
     data() {
@@ -74,7 +75,7 @@ export default defineComponent({
         },
         async hideModal(id: string, delay: number) {
             setTimeout(() => {
-                this.$bvModal.hide(id);
+                (this.$bvModal as BvModal).hide(id);
             }, delay);
         }
     }
