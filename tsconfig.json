@@ -25,7 +25,9 @@
     },
     "types": [
       "@nuxt/types",
-      "@types/node"
+      "@nuxt/axios",
+      "@types/node",
+      "bootstrap-vue"
     ],
     "jsx": "preserve",
     "resolveJsonModule": true
