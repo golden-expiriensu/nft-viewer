@@ -51,7 +51,8 @@ class Network {
 const networks = Network.createNetworks([
     "Mainnet",
     "Rinkeby",
-    "Bsc testnet"
+    "Bsc testnet",
+    "Polygon Mumbai"
 ]);
 
 export default defineComponent({
